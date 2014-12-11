@@ -24,7 +24,7 @@
 #############################################################
 
 # location where you want saratoga installed into
-SARATOGA_ROOT="/home/weewx/public_html/saratoga"
+SARATOGA_ROOT="/var/www/saratoga"
 
 # location to store sources and patches (at least temporarily)
 SOURCES="/mnt/ramdisk/sources"
@@ -84,8 +84,8 @@ done
 
 echo ".....unzipping saratoga files...."
 cd "${SARATOGA_ROOT}"
-unzip -q ${SOURCES}/${BASE_ZIP}
-unzip -q ${SOURCES}/${ICONS_ZIP}
+unzip -q ${SOURCES}/${BASE_ZIP##*/}
+unzip -q ${SOURCES}/${ICONS_ZIP##*/}
 
 echo "....copying WE plugin into place...."
 cp -r "${SOURCES}"/vds-weewx-saratoga-plugin/[A-Za-z]* "${SARATOGA_ROOT}"
