@@ -33,19 +33,40 @@ SOURCES="/mnt/ramdisk/sources"
 # you should probably stop editing here
 #############################################################
 
-# repos to grab from github
+# upstream Saratoga zip archives
+BASE_ZIP="http://saratoga-weather.org/wxtemplates/Base-USA.zip"
+ICONS_ZIP="http://saratoga-weather.org/saratoga-icons.zip"
+
+# vds repos to clone from github
 #   git clone https://github.com/vinceskahan/${FOO}.git
 repos="vds-weewx-saratoga-plugin vds-weewx-saratoga-patches"
 
-# upstream Saratoga zip archives to grab
-zips="Base-USA.zip saratoga-icons.zip"
-
 echo ".....setting up...."
-mkdir -p "${SOURCES}"
-mkdir -p "${SARATOGA_ROOT}"
+for dir in ${SOURCES} ${SARATOGA_ROOT}
+do
+    # this could be 'way' smarter
+    # in particular, it will try to mkdir if it's a 
+    # pre-existing symlink....
+    if [ ! -d "${dir}" ]; then
+       echo "   making ${dir}"
+       mkdir -p "${dir}"
+    else
+        echo "   ${dir} already present"
+    fi
+done
 
 echo ".....getting sources...."
 cd "${SOURCES}"
+
+echo "     saratoga zips"
+for file in ${BASE_ZIP} ${ICONS_ZIP}
+do
+    if [ ! -f "${file##*/}" ]; then
+        wget ${file}
+    else
+        echo "       skipping ${file##*/} - already present"
+    fi
+done
 
 echo "     github repos"
 for repo in vds-weewx-saratoga-plugin vds-weewx-saratoga-patches
@@ -59,19 +80,7 @@ do
  fi
 done
 
-echo "     saratoga zips"
-BASE_ZIP="Base-USA.zip"
-if [ ! -f "${BASE_ZIP}" ]; then
-    wget http://saratoga-weather.org/wxtemplates/${BASE_ZIP}
- else
-    echo "       skipping ${BASE_ZIP} - already present"
-fi
-ICONS_ZIP="saratoga-icons.zip"
-if [ ! -f "${ICONS_ZIP}" ]; then
-    wget http://saratoga-weather.org/${ICONS_ZIP}
-else
-    echo "       skipping ${ICONS_ZIP} - already present"
-fi
+#------- from here down we're installing what we grabbed previously -----
 
 echo ".....unzipping saratoga files...."
 cd "${SARATOGA_ROOT}"
@@ -93,3 +102,90 @@ echo "....done...."
 # test all the links, they should all work
 # ideally there are no error messages appearing in your webserver error log
 
+#------ about US units and weewx-wd ------
+#
+# reminder, if you use US units with weewx-wd, you'll want to add overrides
+# to your weewx.conf something like the following:
+#
+#    [[wdTesttags]]
+#        HTML_ROOT = public_html/WD
+#        skin = Testtags
+#        [[[Units]]]
+#            [[[[Groups]]]]
+#                group_altitude = foot
+#                group_degree_day = degree_F_day
+#                group_pressure = inHg
+#                group_rain = inch
+#                group_rainrate = inch_per_hour
+#                group_speed = mile_per_hour
+#                group_speed2 = mi
+#                group_temperature = degree_F
+#                group_temperature2 = F
+#            [[[[TimeFormats]]]]
+#                date_f = %m/%d/%Y
+#                date_time_f = %m/%d/%Y %H:%M
+#    
+#    [[wdPWS]]
+#        HTML_ROOT = public_html/WD
+#        skin = PWS
+#        [[[Units]]]
+#            [[[[Groups]]]]
+#                group_altitude = foot
+#                group_degree_day = degree_F_day
+#                group_pressure = inHg
+#                group_rain = inch
+#                group_rainrate = inch_per_hour
+#                group_speed = mile_per_hour
+#                group_speed2 = mi
+#                group_temperature = degree_F
+#                group_temperature2 = F
+#    
+#    [[wdClientraw]]
+#        HTML_ROOT = public_html/WD
+#        skin = Clientraw
+#        [[[Units]]]
+#            [[[[Groups]]]]
+#                group_altitude = foot
+#                group_degree_day = degree_F_day
+#                group_pressure = inHg
+#                group_rain = inch
+#                group_rainrate = inch_per_hour
+#                group_speed = mile_per_hour
+#                group_speed2 = mi
+#                group_temperature = degree_F
+#                group_temperature2 = F
+#    
+#    [[wdStackedWindRose]]
+#        HTML_ROOT = public_html/WD
+#        skin = StackedWindRose
+#        [[[Units]]]
+#            [[[[Groups]]]]
+#                group_altitude = foot
+#                group_degree_day = degree_F_day
+#                group_pressure = inHg
+#                group_rain = inch
+#                group_rainrate = inch_per_hour
+#                group_speed = mile_per_hour
+#                group_speed2 = mi
+#                group_temperature = degree_F
+#                group_temperature2 = F
+#            [[[[TimeFormats]]]]
+#                date_f = %m/%d/%Y
+#                date_time_f = %m/%d/%Y %H:%M
+#    
+#    [[wdSteelGauges]]
+#        HTML_ROOT = public_html/WD
+#        skin = SteelGauges
+#        [[[Units]]]
+#            [[[[Groups]]]]
+#                group_altitude = foot
+#                group_degree_day = degree_F_day
+#                group_pressure = inHg
+#                group_rain = inch
+#                group_rainrate = inch_per_hour
+#                group_speed = mile_per_hour
+#                group_speed2 = mi
+#                group_temperature = degree_F
+#                group_temperature2 = F
+#
+#---------------------------------------------------    
