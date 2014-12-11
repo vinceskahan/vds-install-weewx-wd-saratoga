@@ -21,5 +21,10 @@ There are also non-features:
  - I don't try to support running this multiple times.  If you need
     to do so, just remove your destination tree first.
 
+Lastly, I chose to 'not' fix up the permissions on the saratoga
+web root, but on Debian with nginx you want everything therein
+owned as www-data:www-data so Saratoga can write to the cache/
+as well as (unfortunately) some files in the saratoga directory.
+
 
   vinceskahan@gmail.com - 2014-1210
